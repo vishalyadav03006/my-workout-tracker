@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>My Workout Tracker</title>
+<meta name="description" content="A simple, offline workout exercise tracker." />
+<meta name="theme-color" content="#0F1115" />
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/icon-192.png" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Workout" />
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <button id="backBtn" class="icon-btn hidden" aria-label="Back">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M15 4l-8 8 8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <h1 id="topbarTitle">My Workout Tracker</h1>
+    <button id="installBtn" class="icon-btn hidden" aria-label="Install app">
+      <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 3v12m0 0l-4.5-4.5M12 15l4.5-4.5M4 19h16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </header>
+
+  <main id="main">
+
+    <!-- HOME -->
+    <section id="screen-home" class="screen active">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="statExercisesToday">0</span>
+          <span class="stat-label">Exercises today</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="statSetsToday">0</span>
+          <span class="stat-label">Sets today</span>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-block btn-lg" id="startWorkoutBtn">Start Workout</button>
+
+      <div class="card week-summary">
+        <h2 class="card-title">This Week</h2>
+        <div class="week-row">
+          <div><span id="weekWorkouts">0</span><small>workouts</small></div>
+          <div><span id="weekSets">0</span><small>sets</small></div>
+          <div><span id="weekVolume">0</span><small>kg volume</small></div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2>Recent Workouts</h2>
+      </div>
+      <div id="recentWorkoutsList" class="workout-list"></div>
+      <p id="homeEmptyState" class="empty-state hidden">No workouts yet. Tap "Start Workout" to begin.</p>
+    </section>
+
+    <!-- MUSCLE GROUP SELECT -->
+    <section id="screen-muscle" class="screen">
+      <div class="draft-banner" id="draftBanner">
+        <span id="draftBannerText">Workout in progress</span>
+        <button class="btn btn-sm" id="finishFromMuscleBtn">Finish</button>
+      </div>
+      <div class="section-header"><h2>Select Muscle Group</h2></div>
+      <div class="muscle-grid" id="muscleGrid"></div>
+    </section>
+
+    <!-- EXERCISE LIST (within a muscle group) -->
+    <section id="screen-exercise-list" class="screen">
+      <input type="search" id="exerciseSearch" class="search-input" placeholder="Search exercises…" />
+      <div id="exerciseListContainer" class="exercise-list"></div>
+      <button class="btn btn-outline btn-block" id="addCustomExerciseBtn">+ Add Custom Exercise</button>
+    </section>
+
+    <!-- SET ENTRY -->
+    <section id="screen-set-entry" class="screen">
+      <div class="card">
+        <h2 class="card-title" id="setEntryExerciseName">Exercise</h2>
+        <div class="progress-hint" id="setEntryProgressHint"></div>
+      </div>
+
+      <div id="setRows" class="set-rows"></div>
+
+      <button class="btn btn-outline btn-block" id="addSetBtn">+ Add Set</button>
+
+      <div class="btn-row">
+        <button class="btn btn-danger" id="deleteExerciseBtn">Delete Exercise</button>
+        <button class="btn btn-primary" id="saveExerciseBtn">Save Exercise</button>
+      </div>
+    </section>
+
+    <!-- WORKOUT SUMMARY / FINISH -->
+    <section id="screen-workout-summary" class="screen">
+      <div class="section-header"><h2>Workout Summary</h2></div>
+      <div id="summaryExerciseList" class="summary-list"></div>
+      <button class="btn btn-outline btn-block" id="addAnotherExerciseBtn">+ Add Another Exercise</button>
+      <button class="btn btn-primary btn-block btn-lg" id="saveWorkoutBtn">Save Workout</button>
+      <button class="btn btn-text btn-block" id="discardWorkoutBtn">Discard Workout</button>
+    </section>
+
+    <!-- HISTORY -->
+    <section id="screen-history" class="screen">
+      <div id="historyList" class="workout-list"></div>
+      <p id="historyEmptyState" class="empty-state hidden">No workouts saved yet.</p>
+    </section>
+
+    <!-- HISTORY DETAIL -->
+    <section id="screen-history-detail" class="screen">
+      <div id="historyDetailContainer"></div>
+    </section>
+
+    <!-- EXERCISES LIBRARY -->
+    <section id="screen-exercises" class="screen">
+      <input type="search" id="libSearch" class="search-input" placeholder="Search exercises…" />
+      <div id="libContainer"></div>
+      <button class="btn btn-outline btn-block" id="libAddCustomBtn">+ Add Custom Exercise</button>
+      <div class="section-header"><h2>Data</h2></div>
+      <div class="card data-actions">
+        <button class="btn btn-outline btn-block" id="exportBtn">Export Data (.json)</button>
+        <button class="btn btn-outline btn-block" id="importBtn">Import Data</button>
+        <input type="file" id="importFileInput" accept="application/json" class="hidden" />
+        <button class="btn btn-danger btn-block" id="clearAllBtn">Clear All Data</button>
+      </div>
+    </section>
+
+    <!-- EXERCISE PROGRESS -->
+    <section id="screen-exercise-progress" class="screen">
+      <div id="progressContainer"></div>
+    </section>
+
+  </main>
+
+  <!-- Bottom nav -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-nav="home">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 11.5L12 4l8 7.5M6 10v9h12v-9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="nav-btn" data-nav="workout">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 12h2m12 0h2M8 12h8M6 8v8m12-8v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Workout</span>
+    </button>
+    <button class="nav-btn" data-nav="history">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>History</span>
+    </button>
+    <button class="nav-btn" data-nav="exercises">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 4v16M20 4v16M4 12h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Exercises</span>
+    </button>
+  </nav>
+
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<div id="modalRoot"></div>
+
+<script src="js/exercises.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

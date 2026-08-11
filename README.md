@@ -7,6 +7,7 @@ paid APIs — everything is saved permanently in your browser's `localStorage`.
 
 ```
 workout-tracker/
+├── .nojekyll             Tells GitHub Pages to skip Jekyll processing
 ├── index.html          Main app shell (all screens)
 ├── manifest.json        PWA manifest (name, icons, colors)
 ├── sw.js                 Service worker (offline caching)
@@ -20,6 +21,14 @@ workout-tracker/
     ├── icon-192.png
     └── icon-512.png
 ```
+
+All asset paths (`css/`, `js/`, `icons/`, `manifest.json`, `sw.js`) are
+referenced with explicit relative (`./...`) paths — no leading slashes
+anywhere — so the app works identically whether it's hosted at a domain
+root or at a GitHub Pages project subpath like
+`https://username.github.io/repo-name/`. This has been verified by serving
+the app from a simulated subpath and confirming the CSS/JS load and every
+button works with zero console errors.
 
 ## Features included
 
@@ -79,6 +88,45 @@ Install the "Live Server" extension, right-click `index.html`, and choose
    as it does locally.
 
 No build step is required — it's plain HTML/CSS/JS.
+
+### If your deployed site shows unstyled HTML and buttons don't work
+
+This almost always means the browser requested `css/styles.css` or
+`js/app.js` and got a 404 (or an old/broken cached copy), not a bug in the
+page itself. Check these in order:
+
+1. **Files must sit at the published root, not nested in an extra folder.**
+   The single most common mistake: if you drag-and-dropped this whole
+   `workout-tracker` folder into your repo, GitHub will publish it at
+   `your-repo/workout-tracker/index.html`, not `your-repo/index.html`. Open
+   your repo on GitHub.com and confirm `index.html`, `css/`, `js/`, and
+   `manifest.json` are visible **directly at the root** of the branch/folder
+   you picked in Settings → Pages (or directly inside `/docs` if that's
+   what you selected) — not one level deeper.
+2. **Open DevTools → Network tab on the live site** and reload. Look at the
+   requests for `styles.css`, `app.js`, `exercises.js`, `storage.js`. If any
+   show a red `404`, that confirms a path/deployment issue — click the
+   request and check the exact URL it tried, then compare it to where the
+   file actually lives in your repo.
+3. **`.nojekyll` must be committed at the repo root.** It's included in this
+   project already — make sure it actually got pushed (`git status`/`git add
+   -A` sometimes skips dotfiles if you're not careful, or a `.gitignore`
+   excludes it). Without it, GitHub Pages runs your site through Jekyll,
+   which can behave unexpectedly with plain static sites.
+4. **Hard-refresh / clear the service worker.** If you deployed a broken
+   version earlier, your browser's service worker may still be showing you
+   the old cached shell. In DevTools → Application → Service Workers, click
+   "Unregister", then hard-reload (Ctrl/Cmd+Shift+R). This project's service
+   worker now uses a network-first strategy specifically so this shouldn't
+   happen going forward, but it can still affect a browser tab that had the
+   *old* broken service worker installed before this fix.
+5. **Case sensitivity.** GitHub Pages is served from a case-sensitive
+   filesystem. If you ever rename or re-upload files, double-check the case
+   matches exactly what `index.html` references (`css/styles.css`, all
+   lowercase) — this repo's filenames and references already match, so this
+   only matters if you modify things later.
+6. **Give it a minute after pushing.** GitHub Pages builds asynchronously;
+   changes can take 1–2 minutes to go live, occasionally longer.
 
 ## How to install it as an Android app (PWA)
 
